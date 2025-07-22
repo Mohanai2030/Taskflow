@@ -10,7 +10,8 @@ const projectSchema = new Schema({
     description:{
         type:String,
         required:true
-    }
+    },
+    deadline:Date
 })
 
 export const Project = model('Project',projectSchema);
