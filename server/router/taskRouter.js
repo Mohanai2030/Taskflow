@@ -1,7 +1,7 @@
 import express from 'express'
 import { Router } from 'express'
-import { Task } from '../models/taskSchema'
-import { Comment } from '../models/commentSchema';
+import { Task } from '../models/taskSchema.js'
+import { Comment } from '../models/commentSchema.js';
 
 export const taskRouter = Router();
 

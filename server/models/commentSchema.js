@@ -1,5 +1,5 @@
 import mongoose, { mongo } from 'mongoose'
-import { Task } from './taskSchema';
+import { Task } from './taskSchema.js';
 const {Schema,model} = mongoose;
 
 const commentSchema = new Schema({

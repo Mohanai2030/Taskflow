@@ -5,6 +5,7 @@ const taskSchema = new Schema({
     description:String,
     deadline:Date,
     status:{
+        type:String,
         default:"To Do",
         validate:{
             validator: function(s){

@@ -1,6 +1,6 @@
 import express from 'express'
 import { Router } from 'express'
-import { User } from '../models/taskSchema'
+import { User } from '../models/userSchema.js'
 
 export const userRouter = Router();
 
