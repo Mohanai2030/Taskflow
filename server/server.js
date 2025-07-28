@@ -6,11 +6,26 @@ import { taskRouter } from "./router/taskRouter.js";
 import { commentRouter } from "./router/commentRouter.js";
 import { userRouter } from "./router/userRouter.js";
 import { authRouter } from "./router/authRouter.js";
+import cors from 'cors';
+import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
+
 
 const app = express();
 
-app.use(()=>{
-    console.log("request recieved")
+
+app.use(cors({
+    origin:'http://localhost:5173',
+    credentials:true
+}))
+
+app.use(bodyParser.json());
+
+app.use(cookieParser())
+
+app.use((req,res,next)=>{
+    console.log("request recieved",req.method,req.originalUrl);
+    next();
 })
 
 app.use('/auth',authRouter);
