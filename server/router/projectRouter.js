@@ -1,7 +1,7 @@
 import express from 'express'
 import { Router } from 'express'
-import { Project } from '../models/projectSchema';
-import { User } from '../models/userSchema';
+import { Project } from '../models/projectSchema.js';
+import { User } from '../models/userSchema.js';
 
 export const projectRouter = Router();
 

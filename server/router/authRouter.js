@@ -1,6 +1,6 @@
 import express from 'express'
 import { Router } from 'express'
-import { Comment } from '../models/taskSchema'
+import { Comment } from '../models/commentSchema.js'
 
 export const authRouter = Router();
 
@@ -22,4 +22,9 @@ authRouter.post('/signup',async function(req,res){
         console.log("error when trying to create new user account:",err,"for the userbody",userDetails)
     }
 
+})
+
+authRouter.post('/login',async function(req,res){
+    console.log("login requested")
+    console.log(req.body)
 })

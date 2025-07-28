@@ -1,6 +1,6 @@
 import express from 'express'
 import { Router } from 'express'
-import { Comment } from '../models/taskSchema'
+import { Comment } from '../models/commentSchema.js'
 
 export const commentRouter = Router();
 
