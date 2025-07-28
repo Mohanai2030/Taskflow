@@ -20,5 +20,6 @@ userRouter.get('/employees',async function(req,res){
 })
 
 userRouter.get('/projects',async function(req,res){
-    
+    return res.send("hello")
 })
+
