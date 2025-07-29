@@ -4,7 +4,9 @@ import { Comment } from '../models/commentSchema.js'
 import { verifyGoogleToken } from '../auth/googleverifytokn.js';
 import { User } from '../models/userSchema.js';
 import {v4 as uuid4} from 'uuid'
-import { findSession, sessionStore } from '../auth/sessionstore.js';
+import { deleteSession, findSession, sessionStore } from '../auth/sessionstore.js';
+import { redisClient } from '../DB/redisconn.js';
+import { userValidator } from '../middleware/rolegetter.js';
 
 export const authRouter = Router();
 
@@ -68,8 +70,8 @@ authRouter.post('/login',async function(req,res){
                 expiry:tomorrowDate()
             }
             
-            //we also need to send user data ?
-            sessionStore.push(storeInSession);
+            
+            redisClient.set(storeInSession.sessionId,storeInSession)
 
             res.cookie('sessionId',storeInSession.sessionId,{maxAge:24*60*60*1000,httpOnly:true,sameSite:'none',secure:true});
 
@@ -80,5 +82,15 @@ authRouter.post('/login',async function(req,res){
         }
     }catch(err){
         console.log("error when tring to check if email already exists",err);
+    }
+})
+
+authRouter.delete('/logout',async function(req,res){
+    let sessionId = req.cookies?.sessionId;
+    if(sessionId){
+        deleteSession(sessionId);
+        return res.status(200).send("Logged out successfully");
+    }else{
+        res.status(403)
     }
 })

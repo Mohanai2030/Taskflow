@@ -9,19 +9,23 @@ import { authRouter } from "./router/authRouter.js";
 import cors from 'cors';
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
+import { redisCheck, redisClient, redisConnect } from "./DB/redisconn.js";
+import { originChecker } from "./middleware/originchecker.js";
 
 
 const app = express();
 
 
 app.use(cors({
-    origin:'http://localhost:5173',
+    origin:'http://localhost:5173',//FRONTEND_URL
     credentials:true
 }))
 
+app.use(originChecker);
+
 app.use(bodyParser.json());
 
-app.use(cookieParser())
+app.use(cookieParser());
 
 app.use((req,res,next)=>{
     console.log("request recieved",req.method,req.originalUrl);
@@ -41,6 +45,8 @@ app.use('/comment',commentRouter);
 app.listen(3000,async ()=>{
     console.log("server running");
     await connectDB();
+    await redisConnect();
+    // await redisCheck();
 })
 
 

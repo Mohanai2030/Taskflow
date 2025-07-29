@@ -2,8 +2,11 @@ import express from 'express'
 import { Router } from 'express'
 import { Task } from '../models/taskSchema.js'
 import { Comment } from '../models/commentSchema.js';
+import { sessionDetailGetter, userValidator } from '../middleware/rolegetter.js';
 
 export const taskRouter = Router();
+
+taskRouter.use(sessionDetailGetter,userValidator)
 
 taskRouter.post('/',async function(req,res){
 

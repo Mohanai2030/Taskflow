@@ -2,9 +2,13 @@ import express from 'express'
 import { Router } from 'express'
 import { Project } from '../models/projectSchema.js';
 import { User } from '../models/userSchema.js';
+import { managerValidator, sessionDetailGetter, userValidator } from '../middleware/rolegetter.js';
+import { Task } from '../models/taskSchema.js';
+import { Comment } from '../models/commentSchema.js';
 
 export const projectRouter = Router();
 
+projectRouter.use(sessionDetailGetter)
 // projectRouter.get('/',async function(req,res){
 //     let userId = req.query.userId;
 //     try{
@@ -15,7 +19,7 @@ export const projectRouter = Router();
 // })
 
 //only admin allowed
-projectRouter.post('/create',async function(req,res){
+projectRouter.post('/',managerValidator,async function(req,res){
     let projectDetails = req.body;
 
     let newProject = new Project({
@@ -34,8 +38,21 @@ projectRouter.post('/create',async function(req,res){
 
 //think about how to store the name of logged in user in frontend,so when showing members we can also show a you indication
 
-projectRouter.get('/members',async function(req,res){
+//user not allowed as he can see members of other projects
+projectRouter.get('/members',userValidator,async function(req,res){
     let projectId = req.query.project;
+    if(req.session.role!="Manager"){
+
+        let involvedProjects = await User.find({
+            _id:req.session._id
+        }).select({project:1,_id:0})
+
+        if(!involvedProjects.includes(projectId)){
+            console.log("user tried to get project members of a project he isnt part of",req.session);
+            return res.status(401).send("Unauthorized");
+        }
+    }
+    
     try{
         let users = await User.find({
             project:{
@@ -48,7 +65,7 @@ projectRouter.get('/members',async function(req,res){
     }
 })
 
-projectRouter.post('/addmembers',async function(req,res){
+projectRouter.post('/members',managerValidator,async function(req,res){
     let projectId = req.body.projectId;
     let members = req.body.members;
     
@@ -71,7 +88,7 @@ projectRouter.post('/addmembers',async function(req,res){
     }
 })
 
-projectRouter.delete('/members',async function(req,res){
+projectRouter.delete('/members',managerValidator,async function(req,res){
     let projectId = req.query.project;
     let toBeRemovedMembers = req.body.members;
 
@@ -97,7 +114,7 @@ projectRouter.delete('/members',async function(req,res){
     
 })
 
-projectRouter.put('/',async function (req,res){
+projectRouter.put('/',managerValidator,async function (req,res){
     const newProjectToUpdate = req?.body;
 
     try{
@@ -122,7 +139,7 @@ projectRouter.put('/',async function (req,res){
     }
 })
 
-projectRouter.patch('/',async function(req,res){
+projectRouter.patch('/',managerValidator,async function(req,res){
     let toUpdateProject = req?.body;
     let projectId = req.query?.project;
 
@@ -173,11 +190,23 @@ projectRouter.patch('/',async function(req,res){
     
 })
 
-projectRouter.delete('/',async function(req,res){
+projectRouter.delete('/',managerValidator,async function(req,res){
     let projectId = req.query.project;
 
     //definitely there is a need for promise.all
+    let tasks = await Task.find({
+        project:projectId
+    }).select({_id:1})
 
+    tasks.forEach(async(taskId) => {
+        await Comment.deleteMany({
+            task:taskId
+        })
+    })
+
+    await Task.deleteMany({
+        _id:{$in:tasks}
+    })
     //first remove all the references from projects field of users documents
     await User.updateMany({
         project:{
