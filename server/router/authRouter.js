@@ -5,6 +5,7 @@ import { verifyGoogleToken } from '../auth/googleverifytokn.js';
 import { User } from '../models/userSchema.js';
 import {v4 as uuid4} from 'uuid'
 import { findSession, sessionStore } from '../auth/sessionstore.js';
+import { redisClient } from '../DB/redisconn.js';
 
 export const authRouter = Router();
 
@@ -68,8 +69,8 @@ authRouter.post('/login',async function(req,res){
                 expiry:tomorrowDate()
             }
             
-            //we also need to send user data ?
-            sessionStore.push(storeInSession);
+            
+            redisClient.set(storeInSession.sessionId,storeInSession)
 
             res.cookie('sessionId',storeInSession.sessionId,{maxAge:24*60*60*1000,httpOnly:true,sameSite:'none',secure:true});
 

@@ -9,6 +9,7 @@ import { authRouter } from "./router/authRouter.js";
 import cors from 'cors';
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
+import { redisCheck, redisClient, redisConnect } from "./DB/redisconn.js";
 
 
 const app = express();
@@ -41,6 +42,8 @@ app.use('/comment',commentRouter);
 app.listen(3000,async ()=>{
     console.log("server running");
     await connectDB();
+    await redisConnect();
+    // await redisCheck();
 })
 
 
