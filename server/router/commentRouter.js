@@ -1,10 +1,11 @@
 import express from 'express'
 import { Router } from 'express'
 import { Comment } from '../models/commentSchema.js'
+import { sessionDetailGetter, userValidator } from '../middleware/rolegetter.js';
 
 export const commentRouter = Router();
 
-commentRouter.post('/',async function (req,res){
+commentRouter.post('/',sessionDetailGetter,userValidator,async function (req,res){
     let comment = req.body.commentBody;   
     let rootComment = req.body.rootComment;
 
@@ -31,7 +32,7 @@ commentRouter.post('/',async function (req,res){
     
 })
 
-commentRouter.get('/',async function(req,res){
+commentRouter.get('/',sessionDetailGetter,userValidator,async function(req,res){
 
     let taskId = req.query.taskId;
     let rootComment = req.query.rootComment;
