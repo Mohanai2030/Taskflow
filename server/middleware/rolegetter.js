@@ -1,4 +1,4 @@
-import { findSession } from "../auth/sessionstore";
+import { findSession } from "../auth/sessionstore.js";
 // import { redisClient } from "../DB/redisconn";
 
 export async function sessionDetailGetter(req,res,next){
